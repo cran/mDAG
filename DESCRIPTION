@@ -2,8 +2,8 @@ Package: mDAG
 Type: Package
 Title: Inferring Causal Network from Mixed Observational Data Using a
         Directed Acyclic Graph
-Version: 1.0
-Date: 2019-2-25
+Version: 1.1
+Date: 2019-3-1
 Author: Wujuan Zhong, Li Dong
 Maintainer: Wujuan Zhong <zhongwujuan@gmail.com>
 Description: Learning a mixed directed acyclic graph based on both continuous and categorical data.
@@ -15,6 +15,6 @@ Depends: R (>= 2.10), logistf
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.1
 NeedsCompilation: yes
-Packaged: 2019-02-26 20:06:10 UTC; Fox
+Packaged: 2019-03-01 18:40:40 UTC; Fox
 Repository: CRAN
-Date/Publication: 2019-02-26 22:00:03 UTC
+Date/Publication: 2019-03-01 21:40:03 UTC

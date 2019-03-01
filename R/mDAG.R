@@ -48,7 +48,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom methods as new
 #' @importFrom stats cor cor.test glm lm lm.fit predict resid
-#'
+#' @rawNamespace import(bnlearn, except = c(dsep, shd, skeleton, pdag2dag) )
 #' 
 #' @useDynLib mDAG
 #' 
