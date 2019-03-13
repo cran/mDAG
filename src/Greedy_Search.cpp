@@ -4,7 +4,7 @@
 #include <random>
 // [[Rcpp::depends("RcppArmadillo")]]
 using namespace Rcpp;
-
+using namespace std;
 // [[Rcpp::export]]
 List gaussian_cpp(){
   // Obtain environment containing function
@@ -61,7 +61,7 @@ double logLik_cpp(List fit,int samplesize){
   if (family=="gaussian") p=p+1;
   double AIC=fit["aic"];
   double val = p - AIC/2;
-  return val-0.5*log(samplesize)*p;
+  return val-0.5*log((double)samplesize)*p;
 }
 
 // [[Rcpp::export]]
@@ -111,7 +111,7 @@ double  ScoreNodeWithNoneParents(std::vector< std::string > type, std::vector<in
       List control=logistf_control_cpp();
       fit=logistf_fit_cpp(one,data.col(v),weights,control);
       LL_null=fit["loglik"];
-      LL_null=LL_null-0.5*log(data.n_rows)*1;
+      LL_null=LL_null-0.5*log((double)data.n_rows)*1;
     }else{
       LL_null=multinom_BIC_cpp(one,data.col(v),weights);
     }
@@ -181,7 +181,7 @@ NumericVector ScoreGraph(std::vector< std::string > type, std::vector<int> level
           fit=logistf_fit_cpp(x,data.col(v),weights,control);
           int p=x.n_cols;
           double ll=fit["loglik"];
-          tmp[v]=ll-0.5*log(data.n_rows)*p;
+          tmp[v]=ll-0.5*log((double)data.n_rows)*p;
         }else{
           tmp[v]=multinom_BIC_cpp(x,data.col(v),weights);
         }
