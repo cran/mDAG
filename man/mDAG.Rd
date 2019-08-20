@@ -4,9 +4,9 @@
 \alias{mDAG}
 \title{Inferring Causal Network from Mixed Observational Data Using a Directed Acyclic Graph}
 \usage{
-mDAG(data, type, level, lambdaGam = 0.25, ruleReg = "OR",
-  threshold = "LW", weights = rep(1, nrow(data)), alpha = 0.05,
-  nperm = 10000)
+mDAG(data, type, level, SNP = rep(0, ncol(data)), lambdaGam = 0.25,
+  ruleReg = "OR", threshold = "LW", weights = rep(1, nrow(data)),
+  alpha = 0.05, nperm = 10000)
 }
 \arguments{
 \item{data}{A n x p matrix. Each row is a sample; each column is a variable.}
@@ -14,6 +14,8 @@ mDAG(data, type, level, lambdaGam = 0.25, ruleReg = "OR",
 \item{type}{A string vector of length p, indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'c' for categorical.}
 
 \item{level}{A vector of length p, indicating the number of categories of each variable. For continuous variables, set it to 1.}
+
+\item{SNP}{A vector of length p, indicating which variable is a SNP.}
 
 \item{lambdaGam}{Hyperparameter \eqn{\gamma} in the EBIC if \code{lambdaSel = 'EBIC'}. Defaults is \code{lambdaGam = 0.25}.}
 
@@ -76,5 +78,5 @@ Georg Heinze and Meinhard Ploner (2018). logistf: Firth's Bias-Reduced Logistic 
 Min Jin Ha (2013). PenPC: A Two-step Approach to Estimate the Skeletons of High Dimensional Directed Acyclic Graphs. R package version 0.99.1.
 }
 \author{
-Wujuan Zhong, Li Dong
+Wujuan Zhong, Li Dong, Quefeng Li, Xiaojing Zheng
 }

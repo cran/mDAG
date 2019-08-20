@@ -35,7 +35,7 @@ MatrixtoGraph_directed=function(skeleton,data){
 }
 
 
-mgm_skeleton=function(data = data, type = type, level = level,lambdaGam = lambdaGam, 
+mgm_skeleton=function(data = data, type = type, level = level, SNP = SNP ,lambdaGam = lambdaGam, 
                       lambdaSel = lambdaSel, ruleReg=ruleReg, alphaSel = alphaSel, threshold=threshold, weights){
   
   edgeWeights=pair_fast_mgm(data = data,
@@ -47,6 +47,9 @@ mgm_skeleton=function(data = data, type = type, level = level,lambdaGam = lambda
   edgeWeights[edgeWeights==T]=1
   edgeWeights[edgeWeights==F]=0
   
+  # we don't allow edges among SNPs 
+  SNP_ind=which(SNP==1)
+  edgeWeights[SNP_ind,SNP_ind]=0
   return (MatrixtoGraph_undirected(edgeWeights,data))
   
 }
@@ -65,7 +68,7 @@ penpc_skeleton=function(data,type,level,edgeWeights,indepTest=ConditionalTestPer
 }
 
 
-greedysearch_orientation=function(data,type,level,result,weights=rep(1, nrow(data))){
+greedysearch_orientation=function(data,type,level,SNP,result,weights=rep(1, nrow(data))){
   
   estimateundirect=which(result!=0,arr.ind = T)
   arcs=t(apply(estimateundirect,1,function(z) colnames(data)[z]))
@@ -90,6 +93,6 @@ greedysearch_orientation=function(data,type,level,result,weights=rep(1, nrow(dat
   rst$skeleton=result
   
   
-  skeleton=GreedySearch(data ,type, level, rst, weights)
+  skeleton=GreedySearch(data ,type, level, SNP, rst, weights)
   return(MatrixtoGraph_directed(skeleton,data))
 }

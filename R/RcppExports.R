@@ -53,15 +53,15 @@ ScoreGraph <- function(type, level, data, weights, AdjMat) {
     .Call('_mDAG_ScoreGraph', PACKAGE = 'mDAG', type, level, data, weights, AdjMat)
 }
 
-SettingEdges <- function(scores, data, rst, type, level, weights) {
-    .Call('_mDAG_SettingEdges', PACKAGE = 'mDAG', scores, data, rst, type, level, weights)
+SettingEdges <- function(scores, data, rst, type, level, SNP, weights) {
+    .Call('_mDAG_SettingEdges', PACKAGE = 'mDAG', scores, data, rst, type, level, SNP, weights)
 }
 
-AddReverseDelete <- function(AdjMat, scores, data, rst, type, level, weights) {
-    invisible(.Call('_mDAG_AddReverseDelete', PACKAGE = 'mDAG', AdjMat, scores, data, rst, type, level, weights))
+AddReverseDelete <- function(AdjMat, scores, data, rst, type, level, SNP, weights) {
+    invisible(.Call('_mDAG_AddReverseDelete', PACKAGE = 'mDAG', AdjMat, scores, data, rst, type, level, SNP, weights))
 }
 
-GreedySearch <- function(data, type, level, rst, weights) {
-    .Call('_mDAG_GreedySearch', PACKAGE = 'mDAG', data, type, level, rst, weights)
+GreedySearch <- function(data, type, level, SNP, rst, weights) {
+    .Call('_mDAG_GreedySearch', PACKAGE = 'mDAG', data, type, level, SNP, rst, weights)
 }
 

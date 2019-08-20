@@ -4,7 +4,7 @@
 #include <random>
 // [[Rcpp::depends("RcppArmadillo")]]
 using namespace Rcpp;
-using namespace std;
+using std::log;
 // [[Rcpp::export]]
 List gaussian_cpp(){
   // Obtain environment containing function
@@ -199,7 +199,7 @@ NumericVector ScoreGraph(std::vector< std::string > type, std::vector<int> level
 
 // 'SettingEdges' sets edges for initializing the graph at the first iteration step
 // [[Rcpp::export]]
-List SettingEdges(NumericVector scores,arma::mat data,List rst,std::vector< std::string > type, std::vector<int> level,std::vector<double> weights){
+List SettingEdges(NumericVector scores,arma::mat data,List rst,std::vector< std::string > type, std::vector<int> level, std::vector<int> SNP,std::vector<double> weights){
   IntegerMatrix graph(data.n_cols);
   List nodes=rst["nodes"];
   
@@ -207,7 +207,7 @@ List SettingEdges(NumericVector scores,arma::mat data,List rst,std::vector< std:
     List currentnode=nodes.at(i);
     IntegerVector nbr_index=currentnode["nbr_index"];
     for (int j=0;j<nbr_index.size();j++){
-      if (graph(i,nbr_index[j]-1)==0 && graph(nbr_index[j]-1,i)==0){
+      if (graph(i,nbr_index[j]-1)==0 && graph(nbr_index[j]-1,i)==0 && SNP.at(nbr_index[j]-1)==0 ){
         graph(i,nbr_index[j]-1)=1;
         double before=sum(scores);
         NumericVector tmp=ScoreGraph(type,level,data,weights,graph);
@@ -227,7 +227,7 @@ List SettingEdges(NumericVector scores,arma::mat data,List rst,std::vector< std:
 
 
 // [[Rcpp::export]]
-void AddReverseDelete(IntegerMatrix AdjMat,NumericVector scores,arma::mat data ,List rst, std::vector< std::string > type, std::vector<int> level,std::vector<double> weights){
+void AddReverseDelete(IntegerMatrix AdjMat,NumericVector scores,arma::mat data ,List rst, std::vector< std::string > type, std::vector<int> level, std::vector<int> SNP,std::vector<double> weights){
   List nodes=rst["nodes"];
   double before, after;
   NumericVector tmp;
@@ -242,8 +242,10 @@ void AddReverseDelete(IntegerMatrix AdjMat,NumericVector scores,arma::mat data ,
       int rnd= distribution(gen);
     
       //int rnd=(rand()%10)+1;
-      if (AdjMat(i,nbr_index[j]-1)==0 && AdjMat(nbr_index[j]-1,i)==0){
-        AdjMat(i,nbr_index[j]-1)=1;
+      
+      if (AdjMat(i,nbr_index[j]-1)==0 && AdjMat(nbr_index[j]-1,i)==0 && SNP.at(nbr_index[j]-1)==0 ){
+        // we only allow SNP --> other nodes
+        AdjMat(i,nbr_index[j]-1)=1; //add an edge
         before=sum(scores);
         tmp=ScoreGraph(type,level,data,weights,AdjMat);
         after=sum(tmp);
@@ -253,8 +255,8 @@ void AddReverseDelete(IntegerMatrix AdjMat,NumericVector scores,arma::mat data ,
           AdjMat(i,nbr_index[j]-1)=0;
         }
       }else if( AdjMat(i,nbr_index[j]-1)==1 && rnd>5 ){
-        
-        AdjMat(i,nbr_index[j]-1)=0;
+        //delete an edge
+        AdjMat(i,nbr_index[j]-1)=0; 
         before=sum(scores);
         tmp=ScoreGraph(type,level,data,weights,AdjMat);
         after=sum(tmp);
@@ -263,8 +265,9 @@ void AddReverseDelete(IntegerMatrix AdjMat,NumericVector scores,arma::mat data ,
         }else{
           AdjMat(i,nbr_index[j]-1)=1;
         }
-      }else if(AdjMat(nbr_index[j]-1,i)==1 && rnd<=5){
-        AdjMat(nbr_index[j]-1,i)=0;
+      }else if(AdjMat(nbr_index[j]-1,i)==1 && rnd<=5 && SNP.at(nbr_index[j]-1)==0 ){
+        //reverse an edge
+        AdjMat(nbr_index[j]-1,i)=0; 
         AdjMat(i,nbr_index[j]-1)=1;
         before=sum(scores);
         tmp=ScoreGraph(type,level,data,weights,AdjMat);
@@ -284,10 +287,10 @@ void AddReverseDelete(IntegerMatrix AdjMat,NumericVector scores,arma::mat data ,
 }
 
 // [[Rcpp::export]]
-IntegerMatrix GreedySearch(arma::mat data,std::vector< std::string > type, std::vector<int> level,List rst,std::vector<double> weights){
+IntegerMatrix GreedySearch(arma::mat data,std::vector< std::string > type, std::vector<int> level, std::vector<int> SNP , List rst,std::vector<double> weights){
   
   NumericVector scores=InitScore(type,level,data,weights);
-  List initialgraph=SettingEdges(scores,data,rst,type,level,weights);
+  List initialgraph=SettingEdges(scores,data,rst,type,level,SNP,weights);
   scores=initialgraph["scores"];
   IntegerMatrix  graph=initialgraph["graph"];
   int count=0; 
@@ -295,7 +298,7 @@ IntegerMatrix GreedySearch(arma::mat data,std::vector< std::string > type, std::
   for (int k=0;k<n_iteration;k++ ){
     if (count==5) {return graph;}
     double bef=sum(scores);
-    AddReverseDelete(graph,scores,data,rst,type,level,weights);
+    AddReverseDelete(graph,scores,data,rst,type,level,SNP,weights);
     if (sum(scores)==bef) {
       count++;
     }
@@ -306,16 +309,18 @@ IntegerMatrix GreedySearch(arma::mat data,std::vector< std::string > type, std::
 
 
 /*** R
-
-# output of multinom_BIC is -0.5*BIC
-multinom_BIC=function(x,y,weights){
-  formula=y~x
-  fit=multinom(formula,weights=weights,trace=F)
-  p=fit$rank
-  AIC=fit$AIC
-  out=-0.5*AIC+p-0.5*p*log(length(weights)) # -0.5*BIC
-  return( list("out"=out) )
+if(F){
+  # output of multinom_BIC is -0.5*BIC
+  multinom_BIC=function(x,y,weights){
+    formula=y~x
+    fit=multinom(formula,weights=weights,trace=F)
+    p=fit$rank
+    AIC=fit$AIC
+    out=-0.5*AIC+p-0.5*p*log(length(weights)) # -0.5*BIC
+    return( list("out"=out) )
+  }
 }
+
 
 
 

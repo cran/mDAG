@@ -168,8 +168,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // SettingEdges
-List SettingEdges(NumericVector scores, arma::mat data, List rst, std::vector< std::string > type, std::vector<int> level, std::vector<double> weights);
-RcppExport SEXP _mDAG_SettingEdges(SEXP scoresSEXP, SEXP dataSEXP, SEXP rstSEXP, SEXP typeSEXP, SEXP levelSEXP, SEXP weightsSEXP) {
+List SettingEdges(NumericVector scores, arma::mat data, List rst, std::vector< std::string > type, std::vector<int> level, std::vector<int> SNP, std::vector<double> weights);
+RcppExport SEXP _mDAG_SettingEdges(SEXP scoresSEXP, SEXP dataSEXP, SEXP rstSEXP, SEXP typeSEXP, SEXP levelSEXP, SEXP SNPSEXP, SEXP weightsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -178,14 +178,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type rst(rstSEXP);
     Rcpp::traits::input_parameter< std::vector< std::string > >::type type(typeSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type level(levelSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type SNP(SNPSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type weights(weightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(SettingEdges(scores, data, rst, type, level, weights));
+    rcpp_result_gen = Rcpp::wrap(SettingEdges(scores, data, rst, type, level, SNP, weights));
     return rcpp_result_gen;
 END_RCPP
 }
 // AddReverseDelete
-void AddReverseDelete(IntegerMatrix AdjMat, NumericVector scores, arma::mat data, List rst, std::vector< std::string > type, std::vector<int> level, std::vector<double> weights);
-RcppExport SEXP _mDAG_AddReverseDelete(SEXP AdjMatSEXP, SEXP scoresSEXP, SEXP dataSEXP, SEXP rstSEXP, SEXP typeSEXP, SEXP levelSEXP, SEXP weightsSEXP) {
+void AddReverseDelete(IntegerMatrix AdjMat, NumericVector scores, arma::mat data, List rst, std::vector< std::string > type, std::vector<int> level, std::vector<int> SNP, std::vector<double> weights);
+RcppExport SEXP _mDAG_AddReverseDelete(SEXP AdjMatSEXP, SEXP scoresSEXP, SEXP dataSEXP, SEXP rstSEXP, SEXP typeSEXP, SEXP levelSEXP, SEXP SNPSEXP, SEXP weightsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerMatrix >::type AdjMat(AdjMatSEXP);
@@ -194,23 +195,25 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type rst(rstSEXP);
     Rcpp::traits::input_parameter< std::vector< std::string > >::type type(typeSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type level(levelSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type SNP(SNPSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type weights(weightsSEXP);
-    AddReverseDelete(AdjMat, scores, data, rst, type, level, weights);
+    AddReverseDelete(AdjMat, scores, data, rst, type, level, SNP, weights);
     return R_NilValue;
 END_RCPP
 }
 // GreedySearch
-IntegerMatrix GreedySearch(arma::mat data, std::vector< std::string > type, std::vector<int> level, List rst, std::vector<double> weights);
-RcppExport SEXP _mDAG_GreedySearch(SEXP dataSEXP, SEXP typeSEXP, SEXP levelSEXP, SEXP rstSEXP, SEXP weightsSEXP) {
+IntegerMatrix GreedySearch(arma::mat data, std::vector< std::string > type, std::vector<int> level, std::vector<int> SNP, List rst, std::vector<double> weights);
+RcppExport SEXP _mDAG_GreedySearch(SEXP dataSEXP, SEXP typeSEXP, SEXP levelSEXP, SEXP SNPSEXP, SEXP rstSEXP, SEXP weightsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type data(dataSEXP);
     Rcpp::traits::input_parameter< std::vector< std::string > >::type type(typeSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type level(levelSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type SNP(SNPSEXP);
     Rcpp::traits::input_parameter< List >::type rst(rstSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type weights(weightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(GreedySearch(data, type, level, rst, weights));
+    rcpp_result_gen = Rcpp::wrap(GreedySearch(data, type, level, SNP, rst, weights));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -229,9 +232,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_mDAG_ReturnParents", (DL_FUNC) &_mDAG_ReturnParents, 2},
     {"_mDAG_subcolMatrix", (DL_FUNC) &_mDAG_subcolMatrix, 2},
     {"_mDAG_ScoreGraph", (DL_FUNC) &_mDAG_ScoreGraph, 5},
-    {"_mDAG_SettingEdges", (DL_FUNC) &_mDAG_SettingEdges, 6},
-    {"_mDAG_AddReverseDelete", (DL_FUNC) &_mDAG_AddReverseDelete, 7},
-    {"_mDAG_GreedySearch", (DL_FUNC) &_mDAG_GreedySearch, 5},
+    {"_mDAG_SettingEdges", (DL_FUNC) &_mDAG_SettingEdges, 7},
+    {"_mDAG_AddReverseDelete", (DL_FUNC) &_mDAG_AddReverseDelete, 8},
+    {"_mDAG_GreedySearch", (DL_FUNC) &_mDAG_GreedySearch, 6},
     {NULL, NULL, 0}
 };
 

@@ -5,6 +5,7 @@
 #' @param data A n x p matrix. Each row is a sample; each column is a variable.
 #' @param type A string vector of length p, indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'c' for categorical.
 #' @param level A vector of length p, indicating the number of categories of each variable. For continuous variables, set it to 1.
+#' @param SNP A vector of length p, indicating which variable is a SNP.
 #' @param lambdaGam Hyperparameter \eqn{\gamma} in the EBIC if \code{lambdaSel = 'EBIC'}. Defaults is \code{lambdaGam = 0.25}.
 #' @param ruleReg Default is \code{'OR'}. Rule used to combine two estimates from nodewise regression (one from regressing A on B and the other from B on A). ruleReg = \code{'AND'} requires both estimates to be nonzero in order to set the edge to be present. ruleReg = \code{'OR'}
 #' requires at least one estiamte to be nonzero in order to set the edge to be present.
@@ -24,7 +25,7 @@
 #' }
 #'
 #' 
-#' @author Wujuan Zhong, Li Dong
+#' @author Wujuan Zhong, Li Dong, Quefeng Li, Xiaojing Zheng
 #'
 #' @references
 #'
@@ -69,11 +70,11 @@
 #' # bnlearn:::graphviz.backend(nodes=names(dag$nodes),arcs=dag$arcs,shape="rectangle")
 #' 
 #' 
-mDAG=function(data,type,level,lambdaGam=0.25,ruleReg='OR',threshold='LW',
+mDAG=function(data,type,level,SNP=rep(0,ncol(data)),lambdaGam=0.25,ruleReg='OR',threshold='LW',
               weights=rep(1, nrow(data)),alpha=0.05,nperm=10000){
   
   cat("Step 1. Identification of the Markov Blanket","\n")
-  step1=mgm_skeleton(data,type,level,lambdaGam,lambdaSel='EBIC',ruleReg,alphaSel='EBIC',threshold,weights)
+  step1=mgm_skeleton(data,type,level,SNP,lambdaGam,lambdaSel='EBIC',ruleReg,alphaSel='EBIC',threshold,weights)
   cat("\n")
   cat("Step 1 completed!","\n")
   
@@ -82,7 +83,7 @@ mDAG=function(data,type,level,lambdaGam=0.25,ruleReg='OR',threshold='LW',
   cat("Step 2 completed!","\n")
   
   cat("Step 3. Orientation of the mixed DAG","\n")
-  step3=greedysearch_orientation(as.matrix(data),type,level,step2$graph$skeleton)
+  step3=greedysearch_orientation(data=as.matrix(data),type=type,level=level,SNP=SNP,result=step2$graph$skeleton)
   cat("Step 3 completed!","\n")
   
   return(step3)
