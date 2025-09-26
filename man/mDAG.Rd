@@ -4,9 +4,18 @@
 \alias{mDAG}
 \title{Inferring Causal Network from Mixed Observational Data Using a Directed Acyclic Graph}
 \usage{
-mDAG(data, type, level, SNP = rep(0, ncol(data)), lambdaGam = 0.25,
-  ruleReg = "OR", threshold = "LW", weights = rep(1, nrow(data)),
-  alpha = 0.05, nperm = 10000)
+mDAG(
+  data,
+  type,
+  level,
+  SNP = rep(0, ncol(data)),
+  lambdaGam = 0.25,
+  ruleReg = "OR",
+  threshold = "LW",
+  weights = rep(1, nrow(data)),
+  alpha = 0.05,
+  nperm = 10000
+)
 }
 \arguments{
 \item{data}{A n x p matrix. Each row is a sample; each column is a variable.}
